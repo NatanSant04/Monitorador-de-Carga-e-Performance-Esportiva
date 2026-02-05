@@ -38,6 +38,7 @@ Saúde (Peso e Lesão): Monitoramento de categorias de peso e alertas de dores o
 4. Acesse no navegador.
 
 **Próximos Passos (Roadmap)**
+
 [x] Implementação de sistema de autenticação (Login/Senha) para Comissão Técnica.
 
 [ ] Exportação de relatórios em PDF.

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Geral - Clube Paulistano</title>
+    <style>
+        :root {
+            --primary-color: #A00000;
+            --bg-color: #f0f2f5;
+            --injury-bg: #fff9db;
+            --injury-border: #f1c40f;
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background-color: var(--bg-color); 
+            margin: 0; 
+            padding-bottom: 50px; 
+        }
+        
+        /* Cabeçalho Ajustado com Botão Sair */
+        .header { 
+            background-color: var(--primary-color); 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: relative; /* Necessário para o botão absoluto */
+        }
+        .header h1 { margin: 0; font-size: 1.4em; }
+
+        /* Estilo do Botão Sair */
+        .logout-btn {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            text-decoration: none;
+            border: 1px solid white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+        .logout-btn:hover {
+            background-color: white;
+            color: var(--primary-color);
+        }
+
+        /* Container de Filtro Centralizado */
+        .filtro-container { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            margin: 20px auto; 
+            width: 90%; 
+            max-width: 500px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+        }
+
+        .filtro-form {
+            display: flex;
+            flex-direction: column; 
+            gap: 15px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .filtro-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .filtro-item label { 
+            font-weight: bold; 
+            margin-bottom: 10px; 
+            font-size: 1.1em;
+            color: #333;
+        }
+        
+        .filtro-item input { 
+            padding: 12px; 
+            border: 2px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 1.2em;
+            text-align: center;
+            width: 90px;
+        }
+
+        .btn-atualizar { 
+            background-color: var(--primary-color); 
+            color: white; 
+            border: none; 
+            padding: 15px 30px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            width: 100%; 
+            max-width: 250px;
+            font-size: 1em;
+        }
+
+        /* Card do Atleta */
+        .atleta-card { 
+            background: white; 
+            margin: 20px auto; 
+            padding: 20px; 
+            width: 92%; 
+            max-width: 1100px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            border-left: 8px solid var(--primary-color);
+        }
+        
+        .atleta-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 2px solid #eee; 
+            margin-bottom: 20px; 
+            padding-bottom: 10px; 
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .badge-peso { 
+            background: #f8d7da; 
+            color: #721c24; 
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            font-weight: bold; 
+        }
+
+        /* Grid de Gráficos */
+        .grid-graficos { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 20px; 
+        }
+
+        .grafico-item { text-align: center; }
+        .grafico-item p { font-weight: bold; color: #555; margin-bottom: 10px; }
+        img { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd; }
+
+        /* Seção de Lesão */
+        .lesao-box {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: var(--injury-bg);
+            border-radius: 8px;
+            border-left: 5px solid var(--injury-border);
+            text-align: left;
+        }
+        .lesao-box strong { color: #856404; display: block; margin-bottom: 5px; }
+        .lesao-box p { margin: 0; color: #533f03; font-weight: 500; font-style: italic; }
+
+        .btn-voltar { 
+            display: block; 
+            width: fit-content; 
+            margin: 20px auto; 
+            padding: 12px 25px; 
+            background: #444; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 8px; 
+            font-weight: bold;
+        }
+
+        /* Responsividade */
+        @media (min-width: 768px) {
+            .filtro-form { flex-direction: row; }
+            .filtro-item { width: auto; flex-direction: row; gap: 10px; }
+            .filtro-item label { margin-bottom: 0; }
+            .btn-atualizar { width: auto; }
+            .grid-graficos { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (min-width: 1024px) {
+            .grid-graficos { grid-template-columns: 1fr 1fr 1fr; }
+        }
+
+        /* Ajuste Mobile para o Botão Sair */
+        @media (max-width: 600px) {
+            .logout-btn {
+                position: static;
+                display: block;
+                margin-top: 10px;
+                transform: none;
+                width: fit-content;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Relatório Semanal de Atletas</h1>
+        <a href="{{ url_for('logout') }}" class="logout-btn">SAIR</a>
+    </div>
+
+    <div class="filtro-container">
+        <form method="GET" action="{{ url_for('relatorio_geral') }}" class="filtro-form">
+            <div class="filtro-item">
+                <label>Semana (1-52):</label>
+                <input type="number" name="semana" value="{{ numero_semana }}" min="1" max="52">
+            </div>
+            <button type="submit" class="btn-atualizar">Puxar Relatório</button>
+        </form>
+    </div>
+
+    {% if lista_de_graficos %}
+        {% for item in lista_de_graficos %}
+            <div class="atleta-card">
+                <div class="atleta-header">
+                    <h2 style="margin:0;">{{ item.nome }}</h2>
+                    <span class="badge-peso">Média: {{ item.peso_semanal if item.peso_semanal else '--' }} kg</span>
+                </div>
+
+                <div class="grid-graficos">
+                    {% if item.grafico_pse %}
+                        <div class="grafico-item">
+                            <p>Carga de Treino (PSE)</p>
+                            <img src="data:image/png;base64,{{ item.grafico_pse }}">
+                        </div>
+                    {% endif %}
+                    
+                    {% if item.grafico_peso %}
+                        <div class="grafico-item">
+                            <p>Variação de Peso</p>
+                            <img src="data:image/png;base64,{{ item.grafico_peso }}">
+                        </div>
+                    {% endif %}
+
+                    {% if item.grafico_recuperacao %}
+                        <div class="grafico-item">
+                            <p>Recuperação</p>
+                            <img src="data:image/png;base64,{{ item.grafico_recuperacao }}">
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="lesao-box">
+                    <strong>⚠️ Observações / Lesões (Semana {{ numero_semana }}):</strong>
+                    <p>{{ item.lesao if item.lesao else 'Nenhuma lesão relatada.' }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; margin: 50px; color: #666;">
+            <p>Nenhum dado encontrado para a semana {{ numero_semana }}.</p>
+        </div>
+    {% endif %}
+
+    <center><a href="{{ url_for('relatorios') }}" class="btn-voltar">← Voltar ao Painel</a></center>
+
+</body>
+</html>

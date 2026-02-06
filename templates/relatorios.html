@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Análise - Clube Paulistano</title>
+    <style>
+        :root {
+            --primary-color: #A00000;
+            --bg-color: #f0f2f5;
+            --injury-bg: #fff9db;
+            --injury-border: #f1c40f;
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background-color: var(--bg-color); 
+            margin: 0; 
+            padding-bottom: 50px; 
+        }
+        
+        .header { 
+            background-color: var(--primary-color); 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
+            position: relative; /* Necessário para posicionar o botão de sair */
+        }
+
+        /* Estilo do Botão de Sair no cabeçalho */
+        .btn-logout {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            text-decoration: none;
+            border: 1px solid white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background-color: white;
+            color: var(--primary-color);
+        }
+
+        .container { 
+            width: 92%; 
+            max-width: 800px; 
+            margin: 20px auto; 
+        }
+
+        .card { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            text-align: center;
+        }
+
+        h3 { 
+            color: var(--primary-color); 
+            margin-top: 0; 
+            width: 100%;
+            border-bottom: 2px solid #f0f0f0; 
+            padding-bottom: 10px; 
+        }
+
+        .form-group { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            width: 100%;
+            max-width: 400px; 
+        }
+        
+        input, select { 
+            padding: 12px; 
+            border: 2px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn { 
+            padding: 15px; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            width: 100%;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-red { background-color: var(--primary-color); color: white; }
+        .btn-dark { background-color: #444; color: white; }
+        .btn-blue { background-color: #007BFF; color: white; }
+
+        .graph-display { width: 100%; margin-top: 20px; }
+        .graph-display img { 
+            max-width: 100%; 
+            height: auto; 
+            border-radius: 10px; 
+            border: 1px solid #ddd; 
+            margin-top: 15px; 
+        }
+
+        .lesao-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--injury-bg);
+            border-radius: 8px;
+            border-left: 5px solid var(--injury-border);
+            text-align: left;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 600px) {
+            .btn { width: auto; padding: 12px 30px; }
+        }
+
+        /* Ajuste mobile para o botão sair */
+        @media (max-width: 500px) {
+            .btn-logout {
+                position: static;
+                display: block;
+                margin-top: 10px;
+                transform: none;
+                width: fit-content;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Painel de Análise</h1>
+        <a href="{{ url_for('logout') }}" class="btn-logout">SAIR</a>
+    </div>
+
+    <div class="container">
+        
+        <div class="card">
+            <h3>1. Adicionar Atleta</h3>
+            <form method="POST" action="{{ url_for('relatorios') }}" class="form-group">
+                <input type="text" name="nome_novo_atleta" placeholder="Nome do Atleta" required>
+                <input type="text" name="categoria_nova" placeholder="Categoria" required>
+                <button type="submit" class="btn btn-red">Cadastrar</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>2. Relatório por Atleta</h3>
+            <form method="GET" action="{{ url_for('relatorios') }}" class="form-group">
+                <select name="atleta_nome" required>
+                    <option value="">-- Selecione o Atleta --</option>
+                    {% for id, nome in atletas %}
+                    <option value="{{ nome }}" {% if nome == nome_selecionado %}selected{% endif %}>{{ nome }}</option>
+                    {% endfor %}
+                </select>
+                <div style="display: flex; gap: 10px; align-items: center; justify-content: center;">
+                    <label>Semana:</label>
+                    <input type="number" name="semana" value="{{ semana_selecionada }}" min="1" max="52" style="width: 80px;">
+                </div>
+                <button type="submit" class="btn btn-dark">Visualizar Gráficos</button>
+            </form>
+
+            <div class="graph-display">
+                {% if nome_selecionado %}
+                    <h4 style="margin-bottom: 0;">{{ nome_selecionado }} - Semana {{ semana_selecionada }}</h4>
+                    
+                    {% if grafico_pse %}<img src="data:image/png;base64,{{ grafico_pse }}">{% endif %}
+                    {% if grafico_peso %}<img src="data:image/png;base64,{{ grafico_peso }}">{% endif %}
+                    {% if grafico_recuperacao %}<img src="data:image/png;base64,{{ grafico_recuperacao }}">{% endif %}
+
+                    <div class="lesao-info">
+                        <strong style="color: #856404;">⚠️ Observação de Lesão:</strong>
+                        <p style="margin: 5px 0 0 0; color: #533f03;">
+                            {{ lesao if lesao else 'Nenhum relato de lesão para esta semana.' }}
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>3. Relatório da Equipe</h3>
+            <p>Ver todos os atletas simultaneamente:</p>
+            <a href="{{ url_for('relatorio_geral', semana=semana_selecionada) }}" class="btn btn-blue">
+                ABRIR RELATÓRIO GERAL
+            </a>
+        </div>
+
+        <center>
+            <a href="{{ url_for('index') }}" style="text-decoration: none; color: #666; font-weight: bold;">← Voltar ao Início</a>
+        </center>
+
+    </div>
+
+</body>
+</html>
